@@ -21,7 +21,7 @@ class DeetDataset(Dataset):
         x_one = self._transform(image=x_one)["image"]
         x_zero = self._transform(image=x_zero)["image"]
         x = torch.stack([x_one, x_zero])
-        y = np.array([0.25, 0]).astype(np.float32)
+        y = np.array([1, 0]).astype(np.float32)
         y = torch.from_numpy(y)
         return x, y
 

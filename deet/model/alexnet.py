@@ -37,7 +37,8 @@ class DeetAlexnet(DeetModelBase):
         output = self._model(image_input.view(-1, 3, MODEL_IN_WIDTH, MODEL_IN_HEIGHT))[
             0
         ]
-        loss = functional.cross_entropy(output, y).item()
+        loss = functional.binary_cross_entropy_with_logits(output, y).item()
+        # loss_cr_entropy = functional.cross_entropy(output, y).item()
         return loss
 
     def predict(self):
