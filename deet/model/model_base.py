@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+import torch
 
 
 class DeetModelBase(ABC):
@@ -13,5 +14,5 @@ class DeetModelBase(ABC):
         pass
 
     @abstractmethod
-    def calculate_loss(self) -> float:
+    def calculate_loss(self, x: torch.Tensor, y: torch.Tensor) -> float:
         pass
