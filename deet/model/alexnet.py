@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as functional
 import torchvision
 from albumentations.pytorch import ToTensorV2
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
 from deet.model.model_base import DeetModelBase
 
@@ -33,13 +34,25 @@ class DeetAlexnet(DeetModelBase):
 
     def calculate_loss(self, x: torch.Tensor, y: torch.Tensor) -> float:
         y = y.to(DEVICE)
-        image_input = x.to(DEVICE)
-        output = self._model(image_input.view(-1, 3, MODEL_IN_WIDTH, MODEL_IN_HEIGHT))[
-            0
-        ]
+        x = x.to(DEVICE)
+        output = self._model(x.view(-1, 3, MODEL_IN_WIDTH, MODEL_IN_HEIGHT))[0]
         loss = functional.binary_cross_entropy_with_logits(output, y).item()
         # loss_cr_entropy = functional.cross_entropy(output, y).item()
         return loss
+
+    def calculate_metrics(self, x: torch.Tensor, y: torch.Tensor) -> dict:
+        y = y.to(DEVICE)
+        x = x.to(DEVICE)
+        output = self._model(x.view(-1, 3, MODEL_IN_WIDTH, MODEL_IN_HEIGHT))
+        _, predictions = torch.max(output, 1)
+        y = y.detach().cpu().numpy()
+        predictions = predictions.detach().cpu().numpy()
+        return {
+            "accuracy": accuracy_score(y, predictions),
+            "precision": precision_score(y, predictions),
+            "recall": recall_score(y, predictions),
+            "f1": f1_score(y, predictions),
+        }
 
     def predict(self):
         pass
