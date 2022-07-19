@@ -14,7 +14,14 @@ class DeetLearning:
     def fit(
         self, data_train: Dataset, data_val: Dataset, settings: dict
     ) -> dict[str, list[float]]:
-        history = {"train_loss": [], "val_loss": [], "val_accuracy": [], "val_f1": []}
+        history = {
+            "train_loss": [],
+            "val_loss": [],
+            "val_accuracy": [],
+            "val_f1": [],
+            "val_precision": [],
+            "val_recall": [],
+        }
         x_val, y_val = data_val.get_entire_set()
         for epoch in range(settings["epochs"]):
             time_start = time.time()
@@ -58,6 +65,8 @@ class DeetLearning:
             validation_metrics = self._model.calculate_metrics(x_val, y_val)
             history["val_accuracy"].append(validation_metrics["accuracy"])
             history["val_f1"].append(validation_metrics["f1"])
+            history["val_precision"].append(validation_metrics["precision"])
+            history["val_recall"].append(validation_metrics["recall"])
             print(f"Epoka numer {epoch} - {(time.time() - time_start):.4f} seconds")
 
         return history

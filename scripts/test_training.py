@@ -13,7 +13,7 @@ dataset_val = DeetDataset(data, DatasetType.VAL)
 alexnet = DeetAlexnet()
 
 deet = DeetLearning(model=alexnet)
-settings = {"epochs": 3}
+settings = {"epochs": 150}
 history = deet.fit(data_train=dataset_train, data_val=dataset_val, settings=settings)
 
 plt.figure(figsize=(18, 9))
@@ -25,5 +25,7 @@ plt.savefig("train.png")
 plt.figure(figsize=(18, 9))
 plt.plot(history["val_accuracy"], label="accuracy")
 plt.plot(history["val_f1"], label="f1")
+plt.plot(history["val_precision"], label="precision")
+plt.plot(history["val_recall"], label="recall")
 plt.legend()
 plt.savefig("train_metrics.png")
