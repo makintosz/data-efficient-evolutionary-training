@@ -16,3 +16,7 @@ class DeetModelBase(ABC):
     @abstractmethod
     def calculate_loss(self, x: torch.Tensor, y: torch.Tensor) -> float:
         pass
+
+    @abstractmethod
+    def calculate_metrics(self, x: torch.Tensor, y: torch.Tensor) -> dict:
+        pass
