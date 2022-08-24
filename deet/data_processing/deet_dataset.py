@@ -19,12 +19,16 @@ class DeetDataset(Dataset):
         self._prepare_entire_set_data()
 
     def __getitem__(self, item: int) -> tuple[torch.Tensor, torch.Tensor]:
-        x_one = self._data[1][item]
-        x_zero = self._data[0][item]
-        x_one = self._transform(image=x_one)["image"]
-        x_zero = self._transform(image=x_zero)["image"]
-        x = torch.stack([x_one, x_zero])
-        y = np.array([1, 0]).astype(np.float32)
+        x_item = []
+        y_item = []
+        for class_value in self._data.keys():
+            x_sample = self._data[class_value][item]
+            x_sample = self._transform(image=x_sample)["image"]
+            x_item.append(x_sample)
+            y_item.append(class_value)
+
+        x = torch.stack(x_item)
+        y = np.array(y_item).astype(np.float32)
         y = torch.from_numpy(y)
         return x, y
 
@@ -37,15 +41,11 @@ class DeetDataset(Dataset):
     def _prepare_entire_set_data(self) -> None:
         x = []
         y = []
-        for image in self._data[0]:
-            image_tensor = self._transform(image=image)["image"]
-            x.append(image_tensor)
-            y.append(0)
-
-        for image in self._data[1]:
-            image_tensor = self._transform(image=image)["image"]
-            x.append(image_tensor)
-            y.append(1)
+        for class_value in self._data.keys():
+            for image in self._data[class_value]:
+                image_tensor = self._transform(image=image)["image"]
+                x.append(image_tensor)
+                y.append(class_value)
 
         x = torch.stack(x)
         y = np.array(y).reshape((-1, 1)).astype(np.float32)

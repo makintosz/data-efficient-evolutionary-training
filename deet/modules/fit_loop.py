@@ -1,5 +1,6 @@
 import time
 
+from tqdm import tqdm
 from torch.utils.data import Dataset
 
 from deet.model.model_base import DeetModelBase
@@ -21,12 +22,12 @@ class DeetLearning:
             "val_f1": [],
             "val_precision": [],
             "val_recall": [],
+            "total_correct": []
         }
         x_val, y_val = data_val.get_entire_set()
         for epoch in range(settings["epochs"]):
             time_start = time.time()
-            samples_weights = []
-            for sample_index in range(len(data_train)):
+            for sample_index in tqdm(range(len(data_train))):
                 self._model.set_weights(self._current_weights)
                 sample_initial_loss = self._model.calculate_loss(
                     data_train[sample_index][0], data_train[sample_index][1]
@@ -40,10 +41,15 @@ class DeetLearning:
                         data_train[sample_index][0], data_train[sample_index][1]
                     )
 
-                samples_weights.append(new_weights)
+                self._current_weights = crossover_weights(
+                    [
+                        self._current_weights,
+                        new_weights
+                    ]
+                )
 
-            self._current_weights = crossover_weights(samples_weights)
             self._model.set_weights(self._current_weights)
+
             # Train loss
             loss_epoch_train = 0
             for train_samples_index in range(len(data_train)):
@@ -53,6 +59,7 @@ class DeetLearning:
                 )
 
             history["train_loss"].append(loss_epoch_train / len(data_train))
+
             # Val loss
             loss_epoch_val = 0
             for val_samples_index in range(len(data_val)):
@@ -63,10 +70,11 @@ class DeetLearning:
             history["val_loss"].append(loss_epoch_val / len(data_val))
             # Val metrics
             validation_metrics = self._model.calculate_metrics(x_val, y_val)
-            history["val_accuracy"].append(validation_metrics["accuracy"])
-            history["val_f1"].append(validation_metrics["f1"])
-            history["val_precision"].append(validation_metrics["precision"])
-            history["val_recall"].append(validation_metrics["recall"])
+            # history["val_accuracy"].append(validation_metrics["accuracy"])
+            # history["val_f1"].append(validation_metrics["f1"])
+            # history["val_precision"].append(validation_metrics["precision"])
+            # history["val_recall"].append(validation_metrics["recall"])
+            history["total_correct"].append(validation_metrics["total_correct"])
             print(f"Epoka numer {epoch} - {(time.time() - time_start):.4f} seconds")
 
         return history

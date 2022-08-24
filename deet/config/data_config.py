@@ -9,3 +9,4 @@ class DatasetType(Enum):
 
 class Dataset(Enum):
     VEGGIES = "veggies"
+    AGE = "age"
