@@ -4,11 +4,11 @@ from deet.data_processing.load_and_transform import load_and_transform_data
 from deet.model.alexnet import DeetAlexnet
 from deet.modules.evolutionary_tools import crossover_weights, mutate_weights
 
-data = load_and_transform_data("veggies")
+data = load_and_transform_data("age")
 deet_dataset = DeetDataset(data, DatasetType.TRAIN)
 
 x, y = deet_dataset.get_entire_set()
-alexnet = DeetAlexnet()
+alexnet = DeetAlexnet(out_features_number=4)
 
 loss = alexnet.calculate_metrics(x, y)
 print(loss)
