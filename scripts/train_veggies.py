@@ -13,7 +13,7 @@ dataset_val = DeetDataset(data, DatasetType.VAL)
 alexnet = DeetAlexnet(out_features_number=2)
 
 deet = DeetLearning(model=alexnet)
-settings = {"epochs": 150}
+settings = {"epochs": 15}
 history = deet.fit(data_train=dataset_train, data_val=dataset_val, settings=settings)
 
 plt.figure(figsize=(18, 9))
